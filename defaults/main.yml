@@ -1,0 +1,7 @@
+---
+# defaults file for nextcloud
+volumes:
+  db: "/srv/nextcloud/db" 
+  app: "/srv/nextcloud/app"
+  config: "/srv/nextcloud/config"
+  data: "/srv/nextcloud/data"

@@ -1,0 +1,16 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+platforms:
+  - name: instance
+    box: rockylinux/9
+    memory: 1024
+    cpu: 2
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
