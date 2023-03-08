@@ -15,53 +15,37 @@
   loop: "{{ volumes | dict2items }}"
   become: true
 
+- name: Fix permission on nextcloud volumes.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "100032"
+    group: "100032"
+    mode: "0755"
+  loop:
+    - "{{ volumes.app }}"
+    - "{{ volumes.config }}"
+    - "{{ volumes.data }}"
+  become: true
+
 - name: Start nextcloud pod.
   containers.podman.podman_pod:
     name: nc
     state: started
-    publish: "8080:80"
+    publish: "{{ port }}:80"
   register: pod
 
 - name: Debug
   ansible.builtin.debug:
     var: pod
 
-- name: Start db container.
-  containers.podman.podman_container:
-    pod: nc
-    name: nextcloud-db
-    image: docker.io/library/mariadb
-    state: started
-    detach: true
-    restart_policy: "on-failure"
-    volumes:
-      - "{{ volumes.db }}:/var/lib/mysql:Z"
-    env:
-      MYSQL_USER: nextcloud
-      MYSQL_DATABASE: nextcloud
-      MYSQL_PASSWORD: nextcloud
-      MYSQL_ROOT_PASSWORD: nextcloud
-  notify: Wait to initialized db.
+- name: Import db container tasks.
+  ansible.builtin.import_tasks: db.yml
 
-- name: Flush handlers.
-  ansible.builtin.meta: flush_handlers
+- name: Import app container tasks.
+  ansible.builtin.import_tasks: app.yml
 
-- name: Start app container.
-  containers.podman.podman_container:
-    pod: nc
-    name: nextcloud-app
-    image: docker.io/library/nextcloud:latest
-    state: started
-    detach: true
-    restart_policy: "on-failure"
-    volumes:
-      - "{{ volumes.app }}:/var/www/html:Z"
-      - "{{ volumes.config }}:/var/www/html/config:Z"
-      - "{{ volumes.data }}:/var/www/html/data:Z"
-    env:
-      MYSQL_HOST: 127.0.0.1
-      MYSQL_USER: nextcloud
-      MYSQL_DATABASE: nextcloud
-      MYSQL_PASSWORD: nextcloud
-      NEXTCLOUD_ADMIN_USER: admin
-      NEXTCLOUD_ADMIN_PASSWORD: nextcloud
+- name: Import nginx proxy tasks.
+  ansible.builtin.import_tasks: nginx.yml
+
+## TODO
+#  SELinux

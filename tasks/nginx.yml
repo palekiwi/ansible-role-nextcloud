@@ -1,0 +1,20 @@
+---
+- name: Ensure nginx is installed.
+  become: true
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+
+- name: Copy configuration template.
+  become: true
+  ansible.builtin.template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/conf.d/{{ upstream_name }}.conf
+    mode: "0644"
+
+- name: Ensure nginx is enabled and started.
+  become: true
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true

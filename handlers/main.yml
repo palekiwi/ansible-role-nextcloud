@@ -3,3 +3,9 @@
 - name: Wait to initialized db.
   ansible.builtin.wait_for:
     timeout: 10
+
+- name: Wait to initialized db.
+  become: true
+  ansible.builtin.service:
+    name: nginx
+    state: restarted

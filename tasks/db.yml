@@ -1,0 +1,20 @@
+---
+- name: Start db container.
+  containers.podman.podman_container:
+    pod: nc
+    name: nextcloud-db
+    image: docker.io/library/mariadb
+    state: started
+    detach: true
+    restart_policy: "on-failure"
+    volumes:
+      - "{{ volumes.db }}:/var/lib/mysql:Z"
+    env:
+      MYSQL_USER: nextcloud
+      MYSQL_DATABASE: nextcloud
+      MYSQL_PASSWORD: nextcloud
+      MYSQL_ROOT_PASSWORD: nextcloud
+  notify: Wait to initialized db.
+
+- name: Flush handlers.
+  ansible.builtin.meta: flush_handlers

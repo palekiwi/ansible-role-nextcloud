@@ -1,7 +1,37 @@
 ---
 # defaults file for nextcloud
+
+# Nginx configuration
+upstream_name: "nextcloud"
+server_name: "cloud.local"
+port: 8080
+ 
+# create volumes
 volumes:
   db: "/srv/nextcloud/db" 
   app: "/srv/nextcloud/app"
   config: "/srv/nextcloud/config"
   data: "/srv/nextcloud/data"
+
+# MYSQL vars
+MYSQL_USER: nextcloud
+MYSQL_DATABASE: nextcloud
+MYSQL_PASSWORD: nextcloud
+MYSQL_ROOT_PASSWORD: nextcloud
+
+# NEXTCLOUD vars
+NEXTCLOUD_ADMIN_USER: admin
+NEXTCLOUD_ADMIN_PASSWORD: nextcloud
+NEXTCLOUD_OVERWRITEPROTOCOL: ""
+NEXTCLOUD_OVERWRITECLIURL: ""
+NEXTCLOUD_TRUSTED_DOMAINS: "{}"
+
+# SMTP vars
+SMTP_HOST: "smtp.example.com"
+SMTP_SECURE: "tls" # ssl to use SSL, or tls zu use STARTTLS
+SMTP_PORT: "587" # (25, 465 for SSL, 587 for STARTTLS)
+SMTP_AUTHTYPE: "LOGIN"
+SMTP_NAME: "bob@example.com"
+SMTP_PASSWORD: "MailSecret1!"
+MAIL_FROM_ADDRESS: "no-reply"
+MAIL_DOMAIN: "example.com"

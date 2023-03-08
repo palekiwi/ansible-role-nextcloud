@@ -1,0 +1,23 @@
+---
+- name: Start app container.
+  containers.podman.podman_container:
+    pod: nc
+    name: nextcloud-app
+    image: docker.io/library/nextcloud:latest
+    state: started
+    detach: true
+    restart_policy: "on-failure"
+    volumes:
+      - "{{ volumes.app }}:/var/www/html:Z"
+      - "{{ volumes.config }}:/var/www/html/config:Z"
+      - "{{ volumes.data }}:/var/www/html/data:Z"
+    env:
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_USER: "{{ MYSQL_USER }}"
+      MYSQL_DATABASE: "{{ MYSQL_DATABASE }}"
+      MYSQL_PASSWORD: "{{ MYSQL_PASSWORD }}"
+      NEXTCLOUD_ADMIN_USER: "{{ NEXTCLOUD_ADMIN_USER }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ NEXTCLOUD_ADMIN_PASSWORD }}"
+      NEXTCLOUD_OVERWRITEPROTOCOL: "{{ NEXTCLOUD_OVERWRITEPROTOCOL }}"
+      NEXTCLOUD_OVERWRITECLIURL: "{{ NEXTCLOUD_OVERWRITECLIURL }}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "{{ server_name }} {{ NEXTCLOUD_TRUSTED_DOMAINS }}"
