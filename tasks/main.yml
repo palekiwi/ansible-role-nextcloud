@@ -5,26 +5,18 @@
     state: present
   become: true
 
-- name: Create volume directories.
+- name: Create volume directories with correct ownership.
   ansible.builtin.file:
-    path: "{{ item.value }}"
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
     mode: "0755"
     state: directory
-  loop: "{{ volumes | dict2items }}"
-  become: true
-
-- name: Fix permission on nextcloud volumes.
-  ansible.builtin.file:
-    path: "{{ item }}"
-    owner: "100032"
-    group: "100032"
-    mode: "0755"
   loop:
-    - "{{ volumes.app }}"
-    - "{{ volumes.config }}"
-    - "{{ volumes.data }}"
+    - { path: "{{ volumes.db }}", owner: "{{ ansible_user_id }}"}
+    - { path: "{{ volumes.app }}", owner: "100032"}
+    - { path: "{{ volumes.config }}", owner: "100032"}
+    - { path: "{{ volumes.data }}", owner: "100032"}
   become: true
 
 - name: Start nextcloud pod.
@@ -32,11 +24,6 @@
     name: nc
     state: started
     publish: "{{ port }}:80"
-  register: pod
-
-- name: Debug
-  ansible.builtin.debug:
-    var: pod
 
 - name: Import db container tasks.
   ansible.builtin.import_tasks: db.yml
@@ -46,6 +33,3 @@
 
 - name: Import nginx proxy tasks.
   ansible.builtin.import_tasks: nginx.yml
-
-## TODO
-#  SELinux

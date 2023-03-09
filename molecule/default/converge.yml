@@ -5,3 +5,15 @@
     - name: "Include palekiwi.nextcloud"
       ansible.builtin.include_role:
         name: "palekiwi.nextcloud"
+
+    - name: Test server response.
+      ansible.builtin.uri:
+        url: "http://{{ ansible_host }}"
+        return_content: true
+        status_code: 200
+      register: response
+      failed_when: "'login' not in response.content"
+
+    - name: Print machine IP address.
+      ansible.builtin.debug:
+        var: ansible_host

@@ -18,3 +18,28 @@
     name: nginx
     state: started
     enabled: true
+
+- name: Ensure nginx proxy can connect to network.
+  become: true
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+
+- name: Ensure firewall is running.
+  become: true
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Ensure http services are allowed.
+  become: true
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop:
+    - http
+    - https
