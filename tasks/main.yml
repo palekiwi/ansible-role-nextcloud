@@ -33,3 +33,6 @@
 
 - name: Import nginx proxy tasks.
   ansible.builtin.import_tasks: nginx.yml
+
+- name: Import systemd tasks.
+  ansible.builtin.import_tasks: systemd.yml
