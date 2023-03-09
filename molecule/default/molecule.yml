@@ -12,5 +12,7 @@ platforms:
     cpu: 2
 provisioner:
   name: ansible
+  playbooks:
+    cleanup: cleanup.yml
 verifier:
   name: ansible

@@ -6,6 +6,8 @@ server {
     listen [::]:443 ssl ipv6only=on;
     listen 443 ssl;
 
+    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
+
     server_name {{ server_name }};
 	  ssl_certificate       /etc/nginx/{{ pod_name }}.crt;
     ssl_certificate_key   /etc/nginx/{{ pod_name }}.key;

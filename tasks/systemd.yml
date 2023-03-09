@@ -19,8 +19,7 @@
 
 - name: Ensure systemd units are started and enabled for {{ pod_name }}.
   ansible.builtin.systemd:
-    scope: "user"
+    scope: user
     daemon_reload: true
     name: "pod-{{ pod_name }}"
-    state: started
     enabled: true

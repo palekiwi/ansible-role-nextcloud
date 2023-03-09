@@ -13,13 +13,15 @@
     - name: Wait for server to finish setup.
       ansible.builtin.wait_for:
         timeout: 5
+      when: false
 
     - name: Test server response.
       ansible.builtin.uri:
-        url: "https://{{ inventory_hostname_short }}.paradise-liberty.ts.net"
+        url: "https://{{ inventory_hostname_short }}.tail6c0a5.ts.net"
         return_content: true
         status_code: 200
       register: response
+      retries: 3
       failed_when: "'login' not in response.content"
 
     - name: Print machine IP address.
