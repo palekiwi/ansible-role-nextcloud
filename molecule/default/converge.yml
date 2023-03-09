@@ -1,14 +1,22 @@
 ---
 - name: Converge
   hosts: all
+
+  roles:
+    - tailscale
+
   tasks:
     - name: "Include palekiwi.nextcloud"
       ansible.builtin.include_role:
         name: "palekiwi.nextcloud"
 
+    - name: Wait for server to finish setup.
+      ansible.builtin.wait_for:
+        timeout: 5
+
     - name: Test server response.
       ansible.builtin.uri:
-        url: "http://{{ ansible_host }}"
+        url: "https://{{ inventory_hostname_short }}.paradise-liberty.ts.net"
         return_content: true
         status_code: 200
       register: response

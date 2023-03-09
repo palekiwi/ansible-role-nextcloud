@@ -1,19 +1,19 @@
 ---
 - name: Start db container.
   containers.podman.podman_container:
-    pod: nc
-    name: nextcloud-db
-    image: docker.io/library/mariadb
+    pod: "{{ pod_name }}"
+    name: "{{ pod_name }}-db"
+    image: "{{ image_name_mariadb }}"
     state: started
     detach: true
     restart_policy: "on-failure"
     volumes:
       - "{{ volumes.db }}:/var/lib/mysql:Z"
     env:
-      MYSQL_USER: nextcloud
-      MYSQL_DATABASE: nextcloud
-      MYSQL_PASSWORD: nextcloud
-      MYSQL_ROOT_PASSWORD: nextcloud
+      MYSQL_USER: "{{ MYSQL_USER }}"
+      MYSQL_DATABASE: "{{ MYSQL_DATABASE }}"
+      MYSQL_PASSWORD: "{{ MYSQL_PASSWORD }}"
+      MYSQL_ROOT_PASSWORD: "{{ MYSQL_ROOT_PASSWORD }}"
   notify: Wait to initialized db.
 
 - name: Flush handlers.

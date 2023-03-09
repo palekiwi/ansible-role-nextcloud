@@ -1,3 +1,0 @@
----
-# vars file for nextcloud
-NEXTCLOUD_TRUSTED_DOMAINS: "{{ ansible_host }}"

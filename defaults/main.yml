@@ -2,16 +2,23 @@
 # defaults file for nextcloud
 
 # Nginx configuration
-upstream_name: "nextcloud"
-server_name: "cloud.local"
-port: 8080
+tailnet_name: "tailnet.ts.net"
+server_name: "{{ inventory_hostname_short }}.{{ tailnet_name }}"
+
+# pod configuration
+pod_name: nc
+pod_http_port: 8080
+
+#images
+image_name_nextcloud: "docker.io/library/nextcloud:latest"
+image_name_mariadb: "docker.io/library/mariadb"
  
 # create volumes
 volumes:
-  db: "/srv/{{ upstream_name }}/db" 
-  app: "/srv/{{ upstream_name }}/app"
-  config: "/srv/{{ upstream_name }}/config"
-  data: "/srv/{{ upstream_name }}/data"
+  db: "/srv/{{ pod_name }}/db" 
+  app: "/srv/{{ pod_name }}/app"
+  config: "/srv/{{ pod_name }}/config"
+  data: "/srv/{{ pod_name }}/data"
 
 # MYSQL vars
 MYSQL_USER: nextcloud
@@ -22,9 +29,9 @@ MYSQL_ROOT_PASSWORD: nextcloud
 # NEXTCLOUD vars
 NEXTCLOUD_ADMIN_USER: admin
 NEXTCLOUD_ADMIN_PASSWORD: nextcloud
-NEXTCLOUD_OVERWRITEPROTOCOL: ""
+NEXTCLOUD_OVERWRITEPROTOCOL: "https"
 NEXTCLOUD_OVERWRITECLIURL: ""
-NEXTCLOUD_TRUSTED_DOMAINS: ""
+NEXTCLOUD_TRUSTED_DOMAINS: "{{ server_name }}"
 
 # SMTP vars
 SMTP_HOST: "smtp.example.com"

@@ -10,20 +10,20 @@
     path: "{{ item.path }}"
     owner: "{{ item.owner }}"
     group: "{{ item.owner }}"
-    mode: "0755"
+    mode: "{{ item.mode }}"
     state: directory
   loop:
-    - { path: "{{ volumes.db }}", owner: "{{ ansible_user_id }}"}
-    - { path: "{{ volumes.app }}", owner: "100032"}
-    - { path: "{{ volumes.config }}", owner: "100032"}
-    - { path: "{{ volumes.data }}", owner: "100032"}
+    - { path: "{{ volumes.db }}", owner: "100998", mode: "0755"}
+    - { path: "{{ volumes.app }}", owner: "100032", mode: "755"}
+    - { path: "{{ volumes.config }}", owner: "100032", mode: "755"}
+    - { path: "{{ volumes.data }}", owner: "100032", mode: "770"}
   become: true
 
 - name: Start nextcloud pod.
   containers.podman.podman_pod:
-    name: nc
+    name: "{{ pod_name }}"
     state: started
-    publish: "{{ port }}:80"
+    publish: "{{ pod_http_port }}:80"
 
 - name: Import db container tasks.
   ansible.builtin.import_tasks: db.yml
