@@ -6,10 +6,19 @@
     - tailscale
 
   tasks:
+    - name: Copy ssl certificates.
+      become: true
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "/etc/nginx/"
+        mode: "{{ item.mode }}"
+      loop:
+        - { src: files/nc.key, mode: "0600" }
+        - { src: files/nc.crt, mode: "0644" }
+
     - name: "Include palekiwi.nextcloud"
       ansible.builtin.include_role:
         name: "palekiwi.nextcloud"
-
     - name: Wait for server to finish setup.
       ansible.builtin.wait_for:
         timeout: 5
