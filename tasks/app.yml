@@ -1,10 +1,10 @@
 ---
-- name: Start app container.
+- name: Ensure app container exists.
   containers.podman.podman_container:
     pod: "{{ pod_name }}"
     name: "{{ pod_name }}-app"
     image: "{{ image_name_nextcloud }}"
-    state: started
+    state: created
     detach: true
     restart_policy: "on-failure"
     volumes:

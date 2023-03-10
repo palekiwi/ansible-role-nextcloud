@@ -19,10 +19,10 @@
     - { path: "{{ volumes.data }}", owner: "100032", mode: "770"}
   become: true
 
-- name: Start nextcloud pod.
+- name: Ensure a pod exists for {{ pod_name }}.
   containers.podman.podman_pod:
     name: "{{ pod_name }}"
-    state: started
+    state: created
     publish: "{{ pod_http_port }}:80"
 
 - name: Import db container tasks.
@@ -31,8 +31,8 @@
 - name: Import app container tasks.
   ansible.builtin.import_tasks: app.yml
 
-- name: Import nginx proxy tasks.
-  ansible.builtin.import_tasks: nginx.yml
-
 - name: Import systemd tasks.
   ansible.builtin.import_tasks: systemd.yml
+
+- name: Import nginx proxy tasks.
+  ansible.builtin.import_tasks: nginx.yml

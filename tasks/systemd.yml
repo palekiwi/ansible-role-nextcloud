@@ -16,6 +16,7 @@
   containers.podman.podman_generate_systemd:
     name: "{{ pod_name }}"
     dest: "/home/{{ ansible_user_id }}/.config/systemd/user/"
+    restart_policy: "on-failure"
 
 - name: Ensure systemd units are started and enabled for {{ pod_name }}.
   ansible.builtin.systemd:
@@ -23,3 +24,28 @@
     daemon_reload: true
     name: "pod-{{ pod_name }}"
     enabled: true
+    state: started
+
+- name: Ensure systemd service is copied for nextcloud cron job.
+  ansible.builtin.template:
+    src: templates/cron-app.service.j2
+    dest: /home/{{ ansible_user_id }}/.config/systemd/user/{{ pod_name }}-cron-app.service
+    mode: "644"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+
+- name: Ensure systemd timer is copied for nextcloud cron job.
+  ansible.builtin.template:
+    src: templates/cron-app.timer.j2
+    dest: /home/{{ ansible_user_id }}/.config/systemd/user/{{ pod_name }}-cron-app.timer
+    mode: "644"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+
+- name: Ensure systemd timer and service are stared and enabled for nextcloud cron job.
+  ansible.builtin.systemd:
+    scope: user
+    daemon_reload: true
+    name: "{{ pod_name }}-cron-app.timer"
+    enabled: true
+    state: started

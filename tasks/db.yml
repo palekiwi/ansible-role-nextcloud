@@ -1,10 +1,10 @@
 ---
-- name: Start db container.
+- name: Ensure db container exists.
   containers.podman.podman_container:
     pod: "{{ pod_name }}"
     name: "{{ pod_name }}-db"
     image: "{{ image_name_mariadb }}"
-    state: started
+    state: created
     detach: true
     restart_policy: "on-failure"
     volumes:
@@ -14,7 +14,7 @@
       MYSQL_DATABASE: "{{ MYSQL_DATABASE }}"
       MYSQL_PASSWORD: "{{ MYSQL_PASSWORD }}"
       MYSQL_ROOT_PASSWORD: "{{ MYSQL_ROOT_PASSWORD }}"
-  notify: Wait to initialized db.
+  # notify: Wait to initialized db.
 
 - name: Flush handlers.
   ansible.builtin.meta: flush_handlers

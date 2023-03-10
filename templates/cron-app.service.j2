@@ -1,0 +1,12 @@
+[Unit]
+Description=Cron job for {{ pod_name }}-app container inside {{ pod_name }}
+Requires=container-{{ pod_name }}-db.service container-{{ pod_name }}-app.service
+After=container-{{ pod_name }}-db.service container-{{ pod_name }}-app.service
+Wants=cron-container-{{ pod_name }}-app.timer
+
+[Service]
+ExecStart=podman exec -u www-data {{ pod_name }}-app php -f /var/www/html/cron.php
+Type=oneshot
+
+[Install]
+WantedBy=default.target
