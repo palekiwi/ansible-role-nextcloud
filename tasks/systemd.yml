@@ -10,7 +10,7 @@
   ansible.builtin.command:
     cmd: "loginctl enable-linger {{ ansible_user_id }}"
   changed_when: true
-  when: "ansible_user_id in linger.stdout"
+  when: "ansible_user_id not in linger.stdout"
 
 - name: Generate systemd units for {{ pod_name }}.
   containers.podman.podman_generate_systemd:
