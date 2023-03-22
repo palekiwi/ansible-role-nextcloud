@@ -9,36 +9,36 @@ server_name: "{{ inventory_hostname_short }}.{{ tailnet_name }}"
 pod_name: nc
 pod_http_port: 8080
 
-#images
+# images
 image_name_nextcloud: "docker.io/library/nextcloud:latest"
 image_name_mariadb: "docker.io/library/mariadb"
- 
+
 # create volumes
 volumes:
-  db: "/srv/{{ pod_name }}/db" 
+  db: "/srv/{{ pod_name }}/db"
   app: "/srv/{{ pod_name }}/app"
   config: "/srv/{{ pod_name }}/config"
   data: "/srv/{{ pod_name }}/data"
 
 # MYSQL vars
-MYSQL_USER: nextcloud
-MYSQL_DATABASE: nextcloud
-MYSQL_PASSWORD: nextcloud
-MYSQL_ROOT_PASSWORD: nextcloud
+mysql_user: nextcloud
+mysql_database: nextcloud
+mysql_password: nextcloud
+mysql_root_password: nextcloud
 
 # NEXTCLOUD vars
-NEXTCLOUD_ADMIN_USER: admin
-NEXTCLOUD_ADMIN_PASSWORD: nextcloud
-NEXTCLOUD_OVERWRITEPROTOCOL: "https"
-NEXTCLOUD_OVERWRITECLIURL: ""
-NEXTCLOUD_TRUSTED_DOMAINS: "{{ ansible_host  }} {{ server_name }}"
+nextcloud_admin_user: admin
+nextcloud_admin_password: nextcloud
+nextcloud_overwriteprotocol: "https"
+nextcloud_overwritecliurl: ""
+nextcloud_trusted_domains: "{{ ansible_host }} {{ server_name }}"
 
 # SMTP vars
-SMTP_HOST: "smtp.example.com"
-SMTP_SECURE: "tls" # ssl to use SSL, or tls zu use STARTTLS
-SMTP_PORT: "587" # (25, 465 for SSL, 587 for STARTTLS)
-SMTP_AUTHTYPE: "LOGIN"
-SMTP_NAME: "bob@example.com"
-SMTP_PASSWORD: "MailSecret1!"
-MAIL_FROM_ADDRESS: "no-reply"
-MAIL_DOMAIN: "example.com"
+smtp_host: "smtp.example.com"
+smtp_secure: "tls" # ssl to use SSL, or tls zu use STARTTLS
+smtp_port: "587" # (25, 465 for SSL, 587 for STARTTLS)
+smtp_authtype: "LOGIN"
+smtp_name: "bob@example.com"
+smtp_password: "MailSecret1!"
+mail_from_address: "no-reply"
+mail_domain: "example.com"
