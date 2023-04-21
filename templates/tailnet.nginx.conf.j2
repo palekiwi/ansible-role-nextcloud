@@ -9,11 +9,12 @@ server {
     add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
 
     server_name {{ server_name }};
-	  ssl_certificate       /etc/nginx/{{ pod_name }}.crt;
-    ssl_certificate_key   /etc/nginx/{{ pod_name }}.key;
+	  ssl_certificate       /etc/tailscale/{{ pod_name }}.crt;
+    ssl_certificate_key   /etc/tailscale/{{ pod_name }}.key;
 
     # set max upload size
     client_max_body_size 10G;
+    client_body_buffer_size 400M;
 
     location / {
         proxy_pass http://{{ pod_name }};

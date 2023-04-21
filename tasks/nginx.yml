@@ -37,24 +37,8 @@
     - http
     - https
 
-- name: Generate SSL certificates with tailscale.
-  become: true
-  ansible.builtin.command:
-    cmd: >
-      tailscale cert
-      --cert-file /etc/nginx/{{ pod_name }}.crt
-      --key-file /etc/nginx/{{ pod_name }}.key
-      {{ server_name }}
-    creates: "/etc/nginx/{{ pod_name }}.*"
-  notify: Restart nginx.
-
-- name: Copy configuration template.
-  become: true
-  ansible.builtin.template:
-    src: templates/tailnet.nginx.conf.j2
-    dest: /etc/nginx/conf.d/{{ pod_name }}.conf
-    mode: "0644"
-  notify: Restart nginx.
+- name: Import tailscale tasks.
+  ansible.builtin.import_tasks: tailscale.yml
 
 - name: Flush handlers.
   ansible.builtin.meta: flush_handlers
