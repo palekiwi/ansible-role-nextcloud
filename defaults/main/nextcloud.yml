@@ -1,0 +1,25 @@
+---
+# pod configuration
+pod_name: nc
+pod_http_port: 8080
+
+# images
+image_name_nextcloud: "docker.io/library/nextcloud:latest"
+image_name_mariadb: "docker.io/library/mariadb"
+
+# directories
+volumes_dir: "/srv/{{ pod_name }}"
+backup_dir: "/mnt/backup"
+
+# MYSQL vars
+mysql_user: nextcloud
+mysql_database: nextcloud
+mysql_password: nextcloud
+mysql_root_password: nextcloud
+
+# NEXTCLOUD vars
+nextcloud_admin_user: admin
+nextcloud_admin_password: nextcloud
+nextcloud_overwriteprotocol: "https"
+nextcloud_overwritecliurl: ""
+nextcloud_trusted_domains: "{{ ansible_host }} {{ server_name }}"

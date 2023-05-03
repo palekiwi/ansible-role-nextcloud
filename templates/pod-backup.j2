@@ -1,0 +1,33 @@
+#!/bin/bash
+
+export MYSQL_PWD={{ mysql_password }}
+
+# commands to use for backup
+RESTIC={{ restic_helper }}
+PODMAN=/usr/bin/podman
+
+# paths
+DB_DUMP_PATH="/tmp/{{ pod_name }}-db.bak"
+DATA_PATH="{{ volumes_dir }}/data"
+
+# maintenance mode on
+$PODMAN exec -u www-data {{ pod_name }}-app php occ maintenance:mode --on
+
+# dump database
+$PODMAN exec -it {{ pod_name }}-db mysqldump --single-transaction \
+  -u {{ mysql_user }} {{ mysql_database }} > $DB_DUMP_PATH
+
+#### backup data
+# database dump
+$RESTIC backup $DB_DUMP_PATH
+
+# nextcloud data volume requires podman unshare due to file permissions
+$PODMAN unshare $RESTIC backup $DATA_PATH
+
+#### end backup data
+
+#maintenance mode off
+$PODMAN exec -u www-data {{ pod_name }}-app php occ maintenance:mode --off
+
+# forget and prune
+$RESTIC forget --prune --keep-daily 7 --keep-weekly 5 --keep-monthly 12 --keep-yearly 10

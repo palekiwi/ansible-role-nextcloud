@@ -1,0 +1,10 @@
+---
+# defaults file for nextcloud/email
+smtp_host: "smtp.example.com"
+smtp_secure: "tls" # ssl to use SSL, or tls zu use STARTTLS
+smtp_port: "587" # (25, 465 for SSL, 587 for STARTTLS)
+smtp_authtype: "LOGIN"
+smtp_name: "bob@example.com"
+smtp_password: "MailSecret1!"
+mail_from_address: "no-reply"
+mail_domain: "example.com"

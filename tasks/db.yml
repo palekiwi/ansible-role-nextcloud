@@ -8,7 +8,7 @@
     detach: true
     restart_policy: "on-failure"
     volumes:
-      - "{{ volumes.db }}:/var/lib/mysql:Z"
+      - "{{ volumes_dir }}/db:/var/lib/mysql:Z"
     env:
       MYSQL_USER: "{{ mysql_user }}"
       MYSQL_DATABASE: "{{ mysql_database }}"

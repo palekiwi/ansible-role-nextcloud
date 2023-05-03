@@ -39,6 +39,7 @@
 
 - name: Import tailscale tasks.
   ansible.builtin.import_tasks: tailscale.yml
+  when: use_tailscale
 
 - name: Flush handlers.
   ansible.builtin.meta: flush_handlers

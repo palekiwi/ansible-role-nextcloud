@@ -1,0 +1,15 @@
+[Unit]
+Description=Backup job for {{ pod_name }}
+Requires=container-{{ pod_name }}-db.service container-{{ pod_name }}-app.service
+After=container-{{ pod_name }}-db.service container-{{ pod_name }}-app.service
+RequiresMountsFor={{ volumes_dir }}/data {{ backup_dir }}
+Wants={{ pod_name }}-backup.timer
+
+[Service]
+ExecStart=/usr/local/bin/{{ pod_name }}-backup
+Type=oneshot
+StandardOutput=append:{{ volumes_dir }}/log/out.log
+StandardError=append:{{ volumes_dir }}/log/err.log
+
+[Install]
+WantedBy=default.target

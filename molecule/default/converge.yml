@@ -2,37 +2,27 @@
 - name: Converge
   hosts: all
 
-  roles:
-    - tailscale
+  vars:
+    use_tailscale: false
 
   tasks:
-    - name: Copy ssl certificates.
-      become: true
-      ansible.builtin.copy:
-        src: "{{ item.src }}"
-        dest: "/etc/nginx/"
-        mode: "{{ item.mode }}"
-      loop:
-        - { src: files/nc.key, mode: "0600" }
-        - { src: files/nc.crt, mode: "0644" }
+    - name: Setup Tailscale
+      when: use_tailscale
+      block:
+        - name: Setup Tailscale
+          ansible.builtin.include_role:
+            name: tailscale
+
+        - name: Copy ssl certificates.
+          become: true
+          ansible.builtin.copy:
+            src: "{{ item.src }}"
+            dest: "/etc/nginx/"
+            mode: "{{ item.mode }}"
+          loop:
+            - { src: files/nc.key, mode: "0600" }
+            - { src: files/nc.crt, mode: "0644" }
 
     - name: "Include palekiwi.nextcloud"
       ansible.builtin.include_role:
         name: "palekiwi.nextcloud"
-    - name: Wait for server to finish setup.
-      ansible.builtin.wait_for:
-        timeout: 5
-      when: false
-
-    - name: Test server response.
-      ansible.builtin.uri:
-        url: "https://{{ inventory_hostname_short }}.tail6c0a5.ts.net"
-        return_content: true
-        status_code: 200
-      register: response
-      retries: 3
-      failed_when: "'login' not in response.content"
-
-    - name: Print machine IP address.
-      ansible.builtin.debug:
-        var: ansible_host

@@ -5,18 +5,18 @@
     state: present
   become: true
 
-- name: Create volume directories with correct ownership.
+- name: Ensure volume directories exist and have correct ownership.
   ansible.builtin.file:
-    path: "{{ item.path }}"
+    path: "{{ volumes_dir }}/{{ item.dir }}"
     owner: "{{ item.owner }}"
     group: "{{ item.owner }}"
     mode: "{{ item.mode }}"
     state: directory
   loop:
-    - { path: "{{ volumes.db }}", owner: "100998", mode: "0755"}
-    - { path: "{{ volumes.app }}", owner: "100032", mode: "755"}
-    - { path: "{{ volumes.config }}", owner: "100032", mode: "755"}
-    - { path: "{{ volumes.data }}", owner: "100032", mode: "770"}
+    - { dir: "db", owner: "100998", mode: "0755"}
+    - { dir: "app", owner: "100032", mode: "755"}
+    - { dir: "config", owner: "100032", mode: "755"}
+    - { dir: "data", owner: "100032", mode: "770"}
   become: true
 
 - name: Ensure a pod exists for {{ pod_name }}.
@@ -36,3 +36,7 @@
 
 - name: Import nginx proxy tasks.
   ansible.builtin.import_tasks: nginx.yml
+  when: use_tailscale or use_letsencrypt
+
+- name: Import backup tasks.
+  ansible.builtin.import_tasks: backup.yml

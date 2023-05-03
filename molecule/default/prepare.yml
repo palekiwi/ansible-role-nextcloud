@@ -1,0 +1,7 @@
+---
+- name: Prepare
+  become: true
+  hosts: all
+
+  roles:
+    - epel

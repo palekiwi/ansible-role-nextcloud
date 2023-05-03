@@ -6,7 +6,7 @@ driver:
   provider:
     name: libvirt
 platforms:
-  - name: instance
+  - name: nc
     box: rockylinux/9
     memory: 1024
     cpu: 2

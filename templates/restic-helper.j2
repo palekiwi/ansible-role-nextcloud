@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export RESTIC_REPOSITORY={{ backup_dir }}/{{ pod_name }} 
+export RESTIC_PASSWORD_FILE={{ restic_password_file }}
+
+exec /usr/bin/restic "$@"

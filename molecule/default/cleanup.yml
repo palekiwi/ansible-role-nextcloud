@@ -2,8 +2,12 @@
 - name: Cleanup
   hosts: all
 
+  vars:
+    use_tailscale: false
+
   tasks:
     - name: Log out of tailscale.
+      when: use_tailscale
       become: true
       ansible.builtin.command:
         cmd: "tailscale logout"

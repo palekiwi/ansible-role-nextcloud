@@ -8,9 +8,9 @@
     detach: true
     restart_policy: "on-failure"
     volumes:
-      - "{{ volumes.app }}:/var/www/html:Z"
-      - "{{ volumes.config }}:/var/www/html/config:Z"
-      - "{{ volumes.data }}:/var/www/html/data:Z"
+      - "{{ volumes_dir }}/app:/var/www/html:Z"
+      - "{{ volumes_dir }}/config:/var/www/html/config:Z"
+      - "{{ volumes_dir }}/data:/var/www/html/data:Z"
     env:
       MYSQL_HOST: 127.0.0.1
       MYSQL_USER: "{{ mysql_user }}"
