@@ -1,7 +1,6 @@
 ---
 # Nginx configuration
-tailnet_name: "tailnet.ts.net"
-server_name: "{{ inventory_hostname_short }}.{{ tailnet_name }}"
+server_name: "{{ inventory_hostname_short }}"
 
 use_tailscale: false
 use_letsencrypt: false
