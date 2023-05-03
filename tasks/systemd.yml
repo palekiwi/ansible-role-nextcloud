@@ -18,6 +18,13 @@
     dest: "/home/{{ ansible_user_id }}/.config/systemd/user/"
     restart_policy: "on-failure"
 
+- name: Require mounts in systemd unit for {{ pod_name }}.
+  ansible.builtin.lineinfile:
+    path: "/home/{{ ansible_user }}/.config/systemd/user/pod-{{ pod_name }}.service"
+    state: present
+    regexp: '^RequiresMountsFor='
+    line: 'RequiresMountsFor={{ volumes_dir }}/data'
+
 - name: Ensure systemd units are started and enabled for {{ pod_name }}.
   ansible.builtin.systemd:
     scope: user
