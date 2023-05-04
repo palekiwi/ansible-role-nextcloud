@@ -16,8 +16,8 @@
   containers.podman.podman_generate_systemd:
     name: "{{ pod_name }}"
     dest: "/home/{{ ansible_user_id }}/.config/systemd/user/"
-    requires: "{{ systemd_requires }}"
-    after: "{{ systemd_after }}"
+    requires: "{{ pod_systemd_requires }}"
+    after: "{{ pod_systemd_after }}"
     restart_policy: "on-failure"
 
 - name: Ensure systemd units are started and enabled for {{ pod_name }}.
@@ -25,7 +25,7 @@
     scope: user
     daemon_reload: true
     name: "pod-{{ pod_name }}"
-    enabled: "{{ systemd_enabled }}"
+    enabled: "{{ pod_systemd_enabled }}"
     state: started
 
 - name: Ensure systemd service is copied for nextcloud cron job.

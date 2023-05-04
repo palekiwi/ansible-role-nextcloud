@@ -3,9 +3,12 @@
 pod_name: nc
 pod_http_port: 8080
 
-systemd_enabled: false
-systemd_requires: []
-systemd_after: []
+pod_systemd_enabled: false
+pod_systemd_requires: []
+pod_systemd_after: []
+
+backup_systemd_requires: []
+backup_systemd_after: []
 
 # images
 image_name_nextcloud: "docker.io/library/nextcloud:latest"

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export MYSQL_PWD={{ mysql_password }}
-
 # commands to use for backup
 RESTIC={{ restic_helper }}
 PODMAN=/usr/bin/podman
@@ -15,7 +13,7 @@ $PODMAN exec -u www-data {{ pod_name }}-app php occ maintenance:mode --on
 
 # dump database
 $PODMAN exec -it {{ pod_name }}-db mysqldump --single-transaction \
-  -u {{ mysql_user }} {{ mysql_database }} > $DB_DUMP_PATH
+  -u {{ mysql_user }} -p{{ mysql_password }} {{ mysql_database }} > $DB_DUMP_PATH
 
 #### backup data
 # database dump

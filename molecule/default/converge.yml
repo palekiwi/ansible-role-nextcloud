@@ -26,3 +26,8 @@
     - name: "Include palekiwi.nextcloud"
       ansible.builtin.include_role:
         name: "palekiwi.nextcloud"
+      vars:
+        backup_systemd_requires:
+          - mnt-backup.mount
+        backup_systemd_after:
+          - mnt-backup.mount

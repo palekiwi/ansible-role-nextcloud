@@ -2,8 +2,12 @@
 Description=Backup job for {{ pod_name }}
 Requires=container-{{ pod_name }}-db.service container-{{ pod_name }}-app.service
 After=container-{{ pod_name }}-db.service container-{{ pod_name }}-app.service
-RequiresMountsFor={{ volumes_dir }}/data {{ backup_dir }}
 Wants={{ pod_name }}-backup.timer
+
+{% for mount in backup_systemd_requires %}
+Requires={{ mount }}
+After={{ mount }}
+{% endfor %}
 
 [Service]
 ExecStart=/usr/local/bin/{{ pod_name }}-backup
