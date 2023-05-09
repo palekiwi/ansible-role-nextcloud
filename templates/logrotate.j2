@@ -1,8 +1,9 @@
 {{ volumes_dir }}/log/*.log {
         rotate 7
         daily
+        create 0660 {{ ansible_user }} {{ ansible_user }}
         compress
         delaycompress
         missingok
         notifempty
-        create 660 {{ ansible_user }} {{ ansible_user }} }
+}
