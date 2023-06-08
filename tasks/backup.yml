@@ -19,19 +19,21 @@
       ansible.builtin.file:
         path: "{{ backup_dir }}"
         state: directory
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+        owner: "{{ user }}"
+        group: "{{ user }}"
         mode: "0755"
 
     - name: Ensure a password file exists.
+      become_user: "{{ user }}"
       ansible.builtin.copy:
         content: "{{ restic_password }}"
         dest: "{{ restic_password_file }}"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+        owner: "{{ user }}"
+        group: "{{ user }}"
         mode: "0600"
 
     - name: Ensure a restic repository has been initialized.
+      become_user: "{{ user }}"
       ansible.builtin.command:
         cmd: "restic init"
       changed_when: true
@@ -45,8 +47,8 @@
     src: templates/restic-helper.j2
     dest: "{{ restic_helper }}"
     mode: "0700"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
 
 - name: Ensure a logging directory exists.
   become: true
@@ -54,8 +56,8 @@
     path: "{{ volumes_dir }}/log"
     state: directory
     mode: "0755"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
 
 - name: Install a file in logrotate.d.
   become: true
@@ -70,16 +72,17 @@
     src: templates/pod-backup.j2
     dest: /usr/local/bin/{{ pod_name }}-backup
     mode: "0700"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
 
 - name: Copy systemd units.
+  become_user: "{{ user }}"
   ansible.builtin.template:
     src: templates/{{ item.src }}
-    dest: /home/{{ ansible_user }}/.config/systemd/user/{{ item.dest }}
+    dest: /home/{{ user }}/.config/systemd/user/{{ item.dest }}
     mode: "0644"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
   loop:
     - src: pod-backup.service.j2
       dest: "{{ pod_name }}-backup.service"
@@ -87,6 +90,7 @@
       dest: "{{ pod_name }}-backup.timer"
 
 - name: Install systemd timer.
+  become_user: "{{ user }}"
   ansible.builtin.systemd:
     name: "{{ pod_name }}-backup.timer"
     state: started

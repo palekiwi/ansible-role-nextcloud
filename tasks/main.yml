@@ -1,11 +1,12 @@
 ---
 - name: Ensure podman is installed.
+  become: true
   ansible.builtin.dnf:
     name: podman
     state: present
-  become: true
 
 - name: Ensure volume directories exist and have correct ownership.
+  become: true
   ansible.builtin.file:
     path: "{{ volumes_dir }}/{{ item.dir }}"
     owner: "{{ item.owner }}"
@@ -17,9 +18,9 @@
     - { dir: "app", owner: "100032", mode: "755"}
     - { dir: "config", owner: "100032", mode: "755"}
     - { dir: "data", owner: "100032", mode: "770"}
-  become: true
 
 - name: Ensure a pod exists for {{ pod_name }}.
+  become_user: "{{ user }}"
   containers.podman.podman_pod:
     name: "{{ pod_name }}"
     state: created

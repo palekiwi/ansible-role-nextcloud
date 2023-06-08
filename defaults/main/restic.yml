@@ -2,6 +2,6 @@
 # default/main/restic for nextcloud
 restic_password: password
 
-restic_password_file: "/home/{{ ansible_user }}/.restic_{{ pod_name }}"
+restic_password_file: "/home/{{ user }}/.restic_{{ pod_name }}"
 
 restic_helper: "/usr/local/bin/restic-{{ pod_name }}"

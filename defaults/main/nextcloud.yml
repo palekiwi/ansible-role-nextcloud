@@ -1,4 +1,6 @@
 ---
+user: "{{ ansible_user }}"
+
 # pod configuration
 pod_name: nc
 pod_http_port: 8080

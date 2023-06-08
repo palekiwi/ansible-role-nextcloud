@@ -1,5 +1,6 @@
 ---
 - name: Ensure app container exists.
+  become_user: "{{ user }}"
   containers.podman.podman_container:
     pod: "{{ pod_name }}"
     name: "{{ pod_name }}-app"
