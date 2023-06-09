@@ -19,11 +19,23 @@
     - { dir: "config", owner: "100032", mode: "755"}
     - { dir: "data", owner: "100032", mode: "770"}
 
+- name: Ensure container images are present.
+  become_user: "{{ user }}"
+  containers.podman.podman_image:
+    name: "{{ item }}"
+    state: present
+    force: "{{ update_images }}"
+    tag: "latest"
+  loop:
+    - "{{ image_name_nextcloud }}"
+    - "{{ image_name_mariadb }}"
+
 - name: Ensure a pod exists for {{ pod_name }}.
   become_user: "{{ user }}"
   containers.podman.podman_pod:
     name: "{{ pod_name }}"
     state: created
+    recreate: true
     publish: "{{ pod_http_port }}:80"
 
 - name: Import db container tasks.

@@ -14,7 +14,9 @@ backup_systemd_after: []
 
 # images
 image_name_nextcloud: "docker.io/library/nextcloud:latest"
-image_name_mariadb: "docker.io/library/mariadb"
+image_name_mariadb: "docker.io/library/mariadb:latest"
+
+update_images: true
 
 # directories
 volumes_dir: "/srv/{{ pod_name }}"
