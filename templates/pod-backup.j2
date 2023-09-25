@@ -12,7 +12,7 @@ DATA_PATH="{{ volumes_dir }}/data"
 $PODMAN exec -u www-data {{ pod_name }}-app php occ maintenance:mode --on
 
 # dump database
-$PODMAN exec -it {{ pod_name }}-db mysqldump --single-transaction \
+$PODMAN exec -it {{ pod_name }}-db mariadb-dump --single-transaction \
   -u {{ mysql_user }} -p{{ mysql_password }} {{ mysql_database }} > $DB_DUMP_PATH
 
 #### backup data
