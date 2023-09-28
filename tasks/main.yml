@@ -8,6 +8,7 @@
 - name: Import nginx tasks.
   ansible.builtin.import_tasks: nginx/main.yml
   when: nginx_use_nginx
+
 - name: Import pod tasks.
   ansible.builtin.import_tasks: pod.yml
 
@@ -22,7 +23,3 @@
 
 - name: Import backup tasks.
   ansible.builtin.import_tasks: backup.yml
-
-- name: Fail
-  ansible.builtin.fail:
-    msg: Break

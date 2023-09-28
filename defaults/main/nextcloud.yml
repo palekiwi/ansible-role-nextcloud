@@ -16,8 +16,8 @@ backup_systemd_requires: []
 backup_systemd_after: []
 
 # images
-nc_app_image: "docker.io/library/nextcloud:latest"
-nc_db_image: "docker.io/library/mariadb:latest"
+nc_app_image: "docker.io/library/nextcloud"
+nc_db_image: "docker.io/library/mariadb"
 
 update_images: true
 
