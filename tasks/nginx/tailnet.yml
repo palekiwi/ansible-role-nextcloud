@@ -18,6 +18,17 @@
     creates: "/etc/tailscale/{{ nc_pod_name }}.*"
   notify: Recreate nginx.
 
+- name: Ensure tailnet certs are accessible to user.
+  become: true
+  ansible.builtin.file:
+    path: "{{ tailnet_certs_dir }}/{{ item.name }}"
+    owner: "{{ nc_user }}"
+    group: "{{ nc_user }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { "name": "{{ nc_pod_name }}.crt", mode: "0644"}
+    - { "name": "{{ nc_pod_name }}.key", mode: "0600"}
+
 - name: Copy configuration template.
   become_user: "{{ nc_user }}"
   ansible.builtin.template:
