@@ -16,7 +16,6 @@
       --key-file {{ tailnet_certs_dir }}/{{ nc_pod_name }}.key
       {{ tailnet_server_name }}
     creates: "/etc/tailscale/{{ nc_pod_name }}.*"
-  notify: Recreate nginx.
 
 - name: Ensure tailnet certs are accessible to user.
   become: true
@@ -36,7 +35,6 @@
     dest: "{{ nginx_conf_path }}/{{ tailnet_server_name }}.conf"
     mode: "0644"
     force: true
-  notify: Recreate nginx.
 
 - name: Update volumes list for nginx.
   ansible.builtin.set_fact:
@@ -44,6 +42,3 @@
 
 - name: Import nginx setup tasks.
   ansible.builtin.import_tasks: setup.yml
-
-- name: Flush handlers.
-  ansible.builtin.meta: flush_handlers

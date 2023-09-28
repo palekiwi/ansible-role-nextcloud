@@ -8,3 +8,7 @@
 - name: Import tailscale tasks.
   ansible.builtin.import_tasks: tailnet.yml
   when: nginx_use_tailnet
+
+- name: Import certbot tasks.
+  ansible.builtin.import_tasks: certbot.yml
+  when: nginx_use_certbot

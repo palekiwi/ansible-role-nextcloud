@@ -2,7 +2,7 @@
 # Nginx configuration
 nginx_image: "docker.io/library/nginx"
 
-nginx_host: "{{ inventory_hostname_short }}.paradise-liberty.ts.net"
+nginx_host: "{{ ansible_host }}"
 
 nginx_use_nginx: true
 nginx_use_tailnet: false

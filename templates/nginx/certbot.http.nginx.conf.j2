@@ -1,12 +1,12 @@
-upstream {{ pod_name }} {
-	server	127.0.0.1:{{ pod_http_port }};
+upstream {{ nc_pod_name }}_certbot {
+	server	{{ nginx_host }}:{{ nc_pod_http_port }};
 }
 
 server {
     listen 80;
     listen [::]:80;
 
-    server_name {{ server_name }};
+    server_name {{ certbot_server_name }};
 
     add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
 
@@ -15,12 +15,16 @@ server {
     client_body_buffer_size 400M;
 
     location / {
-        proxy_pass http://{{ pod_name }};
+        proxy_pass http://{{ nc_pod_name }}_certbot;
 
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
     }
 
     location /.well-known/carddav {

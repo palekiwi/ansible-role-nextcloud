@@ -1,0 +1,52 @@
+upstream {{ nc_pod_name }}_certbot {
+	server	{{ nginx_host }}:{{ nc_pod_http_port }};
+}
+
+server {
+    listen [::]:443 ssl ipv6only=on;
+    listen 443 ssl;
+
+    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
+
+    server_name {{ certbot_server_name }};
+
+    ssl_certificate       /etc/letsencrypt/live/{{ certbot_server_name }}/fullchain.pem;
+	ssl_certificate_key   /etc/letsencrypt/live/{{ certbot_server_name }}/privkey.pem;
+
+    # set max upload size
+    client_max_body_size 10G;
+    client_body_buffer_size 400M;
+
+    location / {
+        proxy_pass http://{{ nc_pod_name }}_certbot;
+
+      	proxy_set_header Host $http_host;
+    	proxy_set_header X-Real-IP $remote_addr;
+    	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    	proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /.well-known/carddav {
+    	return 301 $scheme://$host/remote.php/dav;
+    }
+
+    location /.well-known/caldav {
+    	return 301 $scheme://$host/remote.php/dav;
+    }
+}
+
+server {
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    if ($host = {{ certbot_server_name }}) {
+        return 301 https://$host$request_uri;
+    }
+
+    listen 80;
+    listen [::]:80;
+
+    server_name {{ certbot_server_name }};
+    return 404;
+}

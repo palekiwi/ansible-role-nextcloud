@@ -4,6 +4,8 @@
 
   vars:
     nginx_use_tailnet: true
+    nginx_use_certbot: true
+    certbot_server_name: test.com
     tailnet_certs_dir: /etc/tailscale
     tailnet_server_name: nc.tail6c0a5.ts.net
     nginx_host: nc.tail6c0a5.ts.net

@@ -1,0 +1,67 @@
+---
+- name: Ensure certbot image is present.
+  become_user: "{{ nc_user }}"
+  containers.podman.podman_image:
+    name: "{{ certbot_image }}"
+    state: present
+    force: "{{ update_images }}"
+    tag: "latest"
+
+- name: Ensure directories exist for certbot volumes.
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ nc_user }}"
+    group: "{{ nc_user }}"
+  loop:
+    - "{{ certbot_certs_dir }}"
+    - "{{ certbot_log_dir }}"
+    - "{{ certbot_lib_dir }}"
+    - "{{ certbot_www_dir }}"
+
+- name: Copy http configuration template.
+  become_user: "{{ nc_user }}"
+  ansible.builtin.template:
+    src: templates/nginx/certbot.http.nginx.conf.j2
+    dest: "{{ nginx_conf_path }}/{{ certbot_server_name }}.conf"
+    mode: "0644"
+    force: true
+
+- name: Update volumes list for nginx.
+  ansible.builtin.set_fact:
+    nginx_volumes: '{{ nginx_volumes + certbot_nginx_volumes }}'
+
+- name: Import nginx setup tasks.
+  ansible.builtin.import_tasks: setup.yml
+
+# TODO
+# start nginx for certbot verification
+
+- name: Ensure certbot container is started.
+  become_user: "{{ nc_user }}"
+  containers.podman.podman_container:
+    name: certbot
+    image: "{{ certbot_image }}"
+    state: started
+    rm: true
+    recreate: true
+    volumes: "{{ certbot_volumes }}"
+    command: certonly -n --webroot --webroot-path /tmp/letsencrypt -m {{ certbot_email }} --agree-tos {{ certbot_server_name }}
+  register: cert
+
+- name: Debug
+  ansible.builtin.debug:
+    var: cert
+
+- name: Copy https configuration template.
+  become_user: "{{ nc_user }}"
+  ansible.builtin.template:
+    src: templates/nginx/certbot.https.nginx.conf.j2
+    dest: "{{ nginx_conf_path }}/{{ certbot_server_name }}.conf"
+    mode: "0644"
+    force: true
+
+- name: Import nginx setup tasks.
+  ansible.builtin.import_tasks: setup.yml

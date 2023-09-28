@@ -1,1 +1,23 @@
 ---
+certbot_image: docker.io/certbot/certbot
+
+certbot_server_name: ""
+
+certbot_email: "admin@palekiwi.com"
+
+certbot_dir: /srv/certbot
+
+certbot_certs_dir: "{{ certbot_dir }}/etc/letsencrypt"
+certbot_log_dir: "{{ certbot_dir }}/var/log"
+certbot_lib_dir: "{{ certbot_dir }}/var/lib/letsencrypt"
+certbot_www_dir: "{{ certbot_dir }}/www"
+
+certbot_volumes:
+  - "{{ certbot_certs_dir }}:/etc/letsencrypt:z"
+  - "{{ certbot_log_dir }}:/var/log:Z"
+  - "{{ certbot_lib_dir }}:/var/lib/letsencrypt:Z"
+  - "{{ certbot_www_dir }}:/tmp/letsencrypt:z"
+
+certbot_nginx_volumes:
+  - "{{ certbot_certs_dir }}:/etc/letsencrypt:ro"
+  - "{{ certbot_www_dir }}:/var/www/certbot:ro"
