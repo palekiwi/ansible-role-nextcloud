@@ -19,6 +19,7 @@
   notify: Recreate nginx.
 
 - name: Copy configuration template.
+  become_user: "{{ nc_user }}"
   ansible.builtin.template:
     src: templates/nginx/tailnet.nginx.conf.j2
     dest: "{{ nginx_conf_path }}/{{ tailnet_server_name }}.conf"
