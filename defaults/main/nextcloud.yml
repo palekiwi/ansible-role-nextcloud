@@ -6,7 +6,7 @@ nc_pod_name: nc
 nc_pod_http_port: 8080
 
 nc_app_user_id: 100032
-nc_db_user_id: 100032
+nc_db_user_id: 100998
 
 pod_systemd_enabled: false
 pod_systemd_requires: []
