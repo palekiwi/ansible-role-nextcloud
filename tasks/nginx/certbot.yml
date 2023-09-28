@@ -48,7 +48,7 @@
     rm: true
     recreate: true
     volumes: "{{ certbot_volumes }}"
-    command: certonly -n --webroot --webroot-path /tmp/letsencrypt -m {{ certbot_email }} --agree-tos {{ certbot_server_name }}
+    command: certonly -n --webroot --webroot-path /tmp/letsencrypt -m {{ certbot_email }} --agree-tos -d {{ certbot_server_name }}
   register: cert
 
 - name: Debug
