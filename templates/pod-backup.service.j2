@@ -1,8 +1,8 @@
 [Unit]
-Description=Backup job for {{ pod_name }}
-Requires=container-{{ pod_name }}-db.service container-{{ pod_name }}-app.service
-After=container-{{ pod_name }}-db.service container-{{ pod_name }}-app.service
-Wants={{ pod_name }}-backup.timer
+Description=Backup job for {{ nc_pod_name }}
+Requires=container-{{ nc_pod_name }}-db.service container-{{ nc_pod_name }}-app.service
+After=container-{{ nc_pod_name }}-db.service container-{{ nc_pod_name }}-app.service
+Wants={{ nc_pod_name }}-backup.timer
 
 {% for mount in backup_systemd_requires %}
 Requires={{ mount }}
@@ -10,10 +10,10 @@ After={{ mount }}
 {% endfor %}
 
 [Service]
-ExecStart=/usr/local/bin/{{ pod_name }}-backup
+ExecStart=/usr/local/bin/{{ nc_pod_name }}-backup
 Type=oneshot
-StandardOutput=append:{{ volumes_dir }}/log/out.log
-StandardError=append:{{ volumes_dir }}/log/err.log
+StandardOutput=append:{{ nc_volumes_dir }}/log/out.log
+StandardError=append:{{ nc_volumes_dir }}/log/err.log
 
 [Install]
 WantedBy=default.target

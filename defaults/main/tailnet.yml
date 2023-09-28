@@ -1,0 +1,7 @@
+---
+tailnet_server_name: "{{ inventory_hostname_short }}.paradise-liberty.ts.net"
+
+tailnet_certs_dir: "/etc/tailscale"
+
+tailnet_nginx_volumes:
+  - "{{ tailnet_certs_dir }}:{{ tailnet_certs_dir }}:ro"

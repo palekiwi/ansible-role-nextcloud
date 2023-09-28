@@ -1,7 +1,7 @@
-{{ volumes_dir }}/log/*.log {
+{{ nc_volumes_dir }}/log/*.log {
         rotate 7
         daily
-        create 0660 {{ user }} {{ user }}
+        create 0660 {{ nc_user }} {{ nc_user }}
         compress
         delaycompress
         missingok

@@ -1,0 +1,17 @@
+---
+# Nginx configuration
+nginx_image: "docker.io/library/nginx"
+
+nginx_host: "{{ inventory_hostname_short }}.paradise-liberty.ts.net"
+
+nginx_use_nginx: true
+nginx_use_tailnet: false
+nginx_use_certbot: false
+
+nginx_conf_path: /srv/nginx/conf.d
+
+nginx_dirs:
+  - { path: "{{ nginx_conf_path }}", owner: "{{ nc_user }}", mode: "0755" }
+
+nginx_volumes:
+  - "/srv/nginx/conf.d:/etc/nginx/conf.d:Z"

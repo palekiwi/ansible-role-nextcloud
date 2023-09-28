@@ -1,21 +1,40 @@
 ---
+- name: Ensure db container image is present.
+  become_user: "{{ nc_user }}"
+  containers.podman.podman_image:
+    name: "{{ nc_db_image }}"
+    state: present
+    force: "{{ update_images }}"
+    tag: "latest"
+
+- name: Ensure db volume directories exist with correct ownership.
+  become: true
+  ansible.builtin.file:
+    path: "{{ nc_volumes_dir }}/{{ item.dir }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    mode: "{{ item.mode }}"
+    state: directory
+  loop:
+    - { dir: "db", owner: "{{ nc_db_user_id }}", mode: "0755"}
+
 - name: Ensure db container exists.
-  become_user: "{{ user }}"
+  become_user: "{{ nc_user }}"
   containers.podman.podman_container:
-    pod: "{{ pod_name }}"
-    name: "{{ pod_name }}-db"
-    image: "{{ image_name_mariadb }}"
+    pod: "{{ nc_pod_name }}"
+    name: "{{ nc_pod_name }}-db"
+    image: "{{ nc_db_image }}"
     state: created
     detach: true
     restart_policy: "on-failure"
     volumes:
-      - "{{ volumes_dir }}/db:/var/lib/mysql:Z"
+      - "{{ nc_volumes_dir }}/db:/var/lib/mysql:Z"
     env:
       MYSQL_USER: "{{ mysql_user }}"
       MYSQL_DATABASE: "{{ mysql_database }}"
       MYSQL_PASSWORD: "{{ mysql_password }}"
       MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
-  # notify: Wait to initialized db.
 
+# notify: Wait to initialized db.
 - name: Flush handlers.
   ansible.builtin.meta: flush_handlers

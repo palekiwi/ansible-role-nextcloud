@@ -8,7 +8,7 @@
 
 - name: Check if restic repository already exists.
   ansible.builtin.stat:
-    path: "{{ backup_dir }}/{{ pod_name }}"
+    path: "{{ nc_backup_dir }}/{{ nc_pod_name }}"
   register: out_repo
 
 - name: Attempt to initialize a repository.
@@ -17,82 +17,82 @@
     - name: Ensure backup directory exists.
       become: true
       ansible.builtin.file:
-        path: "{{ backup_dir }}"
+        path: "{{ nc_backup_dir }}"
         state: directory
-        owner: "{{ user }}"
-        group: "{{ user }}"
+        owner: "{{ nc_user }}"
+        group: "{{ nc_user }}"
         mode: "0755"
 
     - name: Ensure a password file exists.
-      become_user: "{{ user }}"
+      become_user: "{{ nc_user }}"
       ansible.builtin.copy:
         content: "{{ restic_password }}"
         dest: "{{ restic_password_file }}"
-        owner: "{{ user }}"
-        group: "{{ user }}"
+        owner: "{{ nc_user }}"
+        group: "{{ nc_user }}"
         mode: "0600"
 
     - name: Ensure a restic repository has been initialized.
-      become_user: "{{ user }}"
+      become_user: "{{ nc_user }}"
       ansible.builtin.command:
         cmd: "restic init"
       changed_when: true
       environment:
-        RESTIC_REPOSITORY: "{{ backup_dir }}/{{ pod_name }}"
+        RESTIC_REPOSITORY: "{{ nc_backup_dir }}/{{ nc_pod_name }}"
         RESTIC_PASSWORD_FILE: "{{ restic_password_file }}"
 
-- name: Install a helper script for restic-{{ pod_name }}.
+- name: Install a helper script for restic-{{ nc_pod_name }}.
   become: true
   ansible.builtin.template:
     src: templates/restic-helper.j2
     dest: "{{ restic_helper }}"
     mode: "0700"
-    owner: "{{ user }}"
-    group: "{{ user }}"
+    owner: "{{ nc_user }}"
+    group: "{{ nc_user }}"
 
 - name: Ensure a logging directory exists.
   become: true
   ansible.builtin.file:
-    path: "{{ volumes_dir }}/log"
+    path: "{{ nc_volumes_dir }}/log"
     state: directory
     mode: "0755"
-    owner: "{{ user }}"
-    group: "{{ user }}"
+    owner: "{{ nc_user }}"
+    group: "{{ nc_user }}"
 
 - name: Install a file in logrotate.d.
   become: true
   ansible.builtin.template:
     src: templates/logrotate.j2
-    dest: /etc/logrotate.d/{{ pod_name }}-backup
+    dest: /etc/logrotate.d/{{ nc_pod_name }}-backup
     mode: "0644"
 
 - name: Copy backup script.
   become: true
   ansible.builtin.template:
     src: templates/pod-backup.j2
-    dest: /usr/local/bin/{{ pod_name }}-backup
+    dest: /usr/local/bin/{{ nc_pod_name }}-backup
     mode: "0700"
-    owner: "{{ user }}"
-    group: "{{ user }}"
+    owner: "{{ nc_user }}"
+    group: "{{ nc_user }}"
 
 - name: Copy systemd units.
-  become_user: "{{ user }}"
+  become_user: "{{ nc_user }}"
   ansible.builtin.template:
     src: templates/{{ item.src }}
-    dest: /home/{{ user }}/.config/systemd/user/{{ item.dest }}
+    dest: /home/{{ nc_user }}/.config/systemd/user/{{ item.dest }}
     mode: "0644"
-    owner: "{{ user }}"
-    group: "{{ user }}"
+    owner: "{{ nc_user }}"
+    group: "{{ nc_user }}"
   loop:
     - src: pod-backup.service.j2
-      dest: "{{ pod_name }}-backup.service"
+      dest: "{{ nc_pod_name }}-backup.service"
     - src: pod-backup.timer.j2
-      dest: "{{ pod_name }}-backup.timer"
+      dest: "{{ nc_pod_name }}-backup.timer"
 
 - name: Install systemd timer.
-  become_user: "{{ user }}"
+  become_user: "{{ nc_user }}"
   ansible.builtin.systemd:
-    name: "{{ pod_name }}-backup.timer"
+    name: "{{ nc_pod_name }}-backup.timer"
     state: started
     enabled: true
     scope: user

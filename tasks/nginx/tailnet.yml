@@ -1,0 +1,37 @@
+- name: Ensure directory exists for tailscale certs.
+  become: true
+  ansible.builtin.file:
+    path: "{{ tailnet_certs_dir }}"
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Generate SSL certificates with tailscale.
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      tailscale cert
+      --cert-file {{ tailnet_certs_dir }}/{{ nc_pod_name }}.crt
+      --key-file {{ tailnet_certs_dir }}/{{ nc_pod_name }}.key
+      {{ tailnet_server_name }}
+    creates: "/etc/tailscale/{{ nc_pod_name }}.*"
+  notify: Recreate nginx.
+
+- name: Copy configuration template.
+  ansible.builtin.template:
+    src: templates/nginx/tailnet.nginx.conf.j2
+    dest: "{{ nginx_conf_path }}/{{ tailnet_server_name }}.conf"
+    mode: "0644"
+    force: true
+  notify: Recreate nginx.
+
+- name: Update volumes list for nginx.
+  ansible.builtin.set_fact:
+    nginx_volumes: '{{ nginx_volumes + tailnet_nginx_volumes }}'
+
+- name: Import nginx setup tasks.
+  ansible.builtin.import_tasks: setup.yml
+
+- name: Flush handlers.
+  ansible.builtin.meta: flush_handlers

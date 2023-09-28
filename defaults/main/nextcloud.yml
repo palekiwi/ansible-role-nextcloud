@@ -1,9 +1,12 @@
 ---
-user: "{{ ansible_user }}"
+nc_user: "{{ ansible_user }}"
 
 # pod configuration
-pod_name: nc
-pod_http_port: 8080
+nc_pod_name: nc
+nc_pod_http_port: 8080
+
+nc_app_user_id: 100032
+nc_db_user_id: 100032
 
 pod_systemd_enabled: false
 pod_systemd_requires: []
@@ -13,14 +16,14 @@ backup_systemd_requires: []
 backup_systemd_after: []
 
 # images
-image_name_nextcloud: "docker.io/library/nextcloud:latest"
-image_name_mariadb: "docker.io/library/mariadb:latest"
+nc_app_image: "docker.io/library/nextcloud:latest"
+nc_db_image: "docker.io/library/mariadb:latest"
 
 update_images: true
 
 # directories
-volumes_dir: "/srv/{{ pod_name }}"
-backup_dir: "/mnt/backup"
+nc_volumes_dir: "/srv/{{ nc_pod_name }}"
+nc_backup_dir: "/mnt/backup"
 
 # MYSQL vars
 mysql_user: nextcloud
@@ -33,4 +36,4 @@ nextcloud_admin_user: admin
 nextcloud_admin_password: nextcloud
 nextcloud_overwriteprotocol: "https"
 nextcloud_overwritecliurl: ""
-nextcloud_trusted_domains: "{{ ansible_host }} {{ server_name }}"
+nextcloud_trusted_domains: "{{ ansible_host }} {{ tailnet_server_name }}"

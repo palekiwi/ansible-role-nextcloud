@@ -5,14 +5,14 @@ RESTIC={{ restic_helper }}
 PODMAN=/usr/bin/podman
 
 # paths
-DB_DUMP_PATH="/tmp/{{ pod_name }}-db.bak"
-DATA_PATH="{{ volumes_dir }}/data"
+DB_DUMP_PATH="/tmp/{{ nc_pod_name }}-db.bak"
+DATA_PATH="{{ nc_volumes_dir }}/data"
 
 # maintenance mode on
-$PODMAN exec -u www-data {{ pod_name }}-app php occ maintenance:mode --on
+$PODMAN exec -u www-data {{ nc_pod_name }}-app php occ maintenance:mode --on
 
 # dump database
-$PODMAN exec -it {{ pod_name }}-db mariadb-dump --single-transaction \
+$PODMAN exec -it {{ nc_pod_name }}-db mariadb-dump --single-transaction \
   -u {{ mysql_user }} -p{{ mysql_password }} {{ mysql_database }} > $DB_DUMP_PATH
 
 #### backup data
@@ -25,7 +25,7 @@ $PODMAN unshare $RESTIC backup $DATA_PATH
 #### end backup data
 
 #maintenance mode off
-$PODMAN exec -u www-data {{ pod_name }}-app php occ maintenance:mode --off
+$PODMAN exec -u www-data {{ nc_pod_name }}-app php occ maintenance:mode --off
 
 # forget and prune
 $RESTIC forget --prune --keep-daily 7 --keep-weekly 5 --keep-monthly 12 --keep-yearly 10

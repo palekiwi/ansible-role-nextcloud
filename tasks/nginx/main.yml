@@ -1,0 +1,10 @@
+---
+- name: Import nginx setup tasks.
+  ansible.builtin.import_tasks: setup.yml
+
+- name: Import nginx security tasks.
+  ansible.builtin.import_tasks: security.yml
+
+- name: Import tailscale tasks.
+  ansible.builtin.import_tasks: tailnet.yml
+  when: nginx_use_tailnet

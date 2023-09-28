@@ -3,21 +3,40 @@
   hosts: all
 
   vars:
-    use_tailscale: false
+    nginx_use_tailnet: true
+    tailnet_certs_dir: /etc/tailscale
+    tailnet_server_name: nc.tail6c0a5.ts.net
+    nginx_host: nc.tail6c0a5.ts.net
+    nc_user: vagrant
+    nc_backup_dir: /tmp
 
   tasks:
     - name: Setup Tailscale
-      when: use_tailscale
+      when: nginx_use_tailnet
       block:
         - name: Setup Tailscale
           ansible.builtin.include_role:
             name: tailscale
+          vars:
+            auth_key: tskey-auth-kUkQB54CNTRL-YBnY7ZgEWZDvXEsRdTyubD1MegZuBTef
+            hostname: nc
+
+        - name: Ensure directory exists for tailscale certs.
+          when: false
+          become: true
+          ansible.builtin.file:
+            path: "{{ tailnet_certs_dir }}"
+            state: directory
+            mode: "0755"
+            owner: root
+            group: root
 
         - name: Copy ssl certificates.
+          when: false
           become: true
           ansible.builtin.copy:
             src: "{{ item.src }}"
-            dest: "/etc/nginx/"
+            dest: "{{ tailnet_certs_dir }}"
             mode: "{{ item.mode }}"
           loop:
             - { src: files/nc.key, mode: "0600" }
@@ -26,8 +45,3 @@
     - name: "Include palekiwi.nextcloud"
       ansible.builtin.include_role:
         name: "palekiwi.nextcloud"
-      vars:
-        backup_systemd_requires:
-          - mnt-backup.mount
-        backup_systemd_after:
-          - mnt-backup.mount

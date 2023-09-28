@@ -5,38 +5,11 @@
     name: podman
     state: present
 
-- name: Ensure volume directories exist and have correct ownership.
-  become: true
-  ansible.builtin.file:
-    path: "{{ volumes_dir }}/{{ item.dir }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.owner }}"
-    mode: "{{ item.mode }}"
-    state: directory
-  loop:
-    - { dir: "db", owner: "100998", mode: "0755"}
-    - { dir: "app", owner: "100032", mode: "755"}
-    - { dir: "config", owner: "100032", mode: "755"}
-    - { dir: "data", owner: "100032", mode: "770"}
-
-- name: Ensure container images are present.
-  become_user: "{{ user }}"
-  containers.podman.podman_image:
-    name: "{{ item }}"
-    state: present
-    force: "{{ update_images }}"
-    tag: "latest"
-  loop:
-    - "{{ image_name_nextcloud }}"
-    - "{{ image_name_mariadb }}"
-
-- name: Ensure a pod exists for {{ pod_name }}.
-  become_user: "{{ user }}"
-  containers.podman.podman_pod:
-    name: "{{ pod_name }}"
-    state: created
-    recreate: true
-    publish: "{{ pod_http_port }}:80"
+- name: Import nginx tasks.
+  ansible.builtin.import_tasks: nginx/main.yml
+  when: nginx_use_nginx
+- name: Import pod tasks.
+  ansible.builtin.import_tasks: pod.yml
 
 - name: Import db container tasks.
   ansible.builtin.import_tasks: db.yml
@@ -47,9 +20,9 @@
 - name: Import systemd tasks.
   ansible.builtin.import_tasks: systemd.yml
 
-- name: Import nginx proxy tasks.
-  ansible.builtin.import_tasks: nginx.yml
-  when: use_tailscale or use_letsencrypt
-
 - name: Import backup tasks.
   ansible.builtin.import_tasks: backup.yml
+
+- name: Fail
+  ansible.builtin.fail:
+    msg: Break

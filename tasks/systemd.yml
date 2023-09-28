@@ -5,54 +5,71 @@
   changed_when: false
   register: linger
 
-- name: Enable linger for user {{ user }}
+- name: Enable linger for user {{ nc_user }}
   become: true
   ansible.builtin.command:
-    cmd: "loginctl enable-linger {{ user }}"
+    cmd: "loginctl enable-linger {{ nc_user }}"
   changed_when: true
-  when: "user not in linger.stdout"
+  when: "nc_user not in linger.stdout"
 
-- name: Generate systemd units for {{ pod_name }}.
-  become_user: "{{ user }}"
+- name: Generate systemd units for {{ nc_pod_name }}.
+  become_user: "{{ nc_user }}"
   containers.podman.podman_generate_systemd:
-    name: "{{ pod_name }}"
-    dest: "/home/{{ user }}/.config/systemd/user/"
+    name: "{{ nc_pod_name }}"
+    dest: "/home/{{ nc_user }}/.config/systemd/user/"
     requires: "{{ pod_systemd_requires }}"
     after: "{{ pod_systemd_after }}"
     restart_policy: "on-failure"
 
-- name: Ensure systemd units are started and enabled for {{ pod_name }}.
-  become_user: "{{ user }}"
+- name: Ensure systemd units are started and enabled for {{ nc_pod_name }}.
+  become_user: "{{ nc_user }}"
   ansible.builtin.systemd:
     scope: user
     daemon_reload: true
-    name: "pod-{{ pod_name }}"
+    name: "pod-{{ nc_pod_name }}"
     enabled: "{{ pod_systemd_enabled }}"
     state: started
 
 - name: Ensure systemd service is copied for nextcloud cron job.
-  become_user: "{{ user }}"
+  become_user: "{{ nc_user }}"
   ansible.builtin.template:
     src: templates/cron-app.service.j2
-    dest: /home/{{ user }}/.config/systemd/user/{{ pod_name }}-cron-app.service
+    dest: /home/{{ nc_user }}/.config/systemd/user/{{ nc_pod_name }}-cron-app.service
     mode: "644"
-    owner: "{{ user }}"
-    group: "{{ user }}"
+    owner: "{{ nc_user }}"
+    group: "{{ nc_user }}"
 
 - name: Ensure systemd timer is copied for nextcloud cron job.
-  become_user: "{{ user }}"
+  become_user: "{{ nc_user }}"
   ansible.builtin.template:
     src: templates/cron-app.timer.j2
-    dest: /home/{{ user }}/.config/systemd/user/{{ pod_name }}-cron-app.timer
+    dest: /home/{{ nc_user }}/.config/systemd/user/{{ nc_pod_name }}-cron-app.timer
     mode: "644"
-    owner: "{{ user }}"
-    group: "{{ user }}"
+    owner: "{{ nc_user }}"
+    group: "{{ nc_user }}"
 
 - name: Ensure systemd timer and service are stared and enabled for nextcloud cron job.
-  become_user: "{{ user }}"
+  become_user: "{{ nc_user }}"
   ansible.builtin.systemd:
     scope: user
     daemon_reload: true
-    name: "{{ pod_name }}-cron-app.timer"
+    name: "{{ nc_pod_name }}-cron-app.timer"
     enabled: true
+    state: started
+
+# nginx units
+- name: Generate systemd units for nginx.
+  become_user: "{{ nc_user }}"
+  containers.podman.podman_generate_systemd:
+    name: nginx
+    dest: "/home/{{ nc_user }}/.config/systemd/user/"
+    restart_policy: "on-failure"
+
+- name: Ensure systemd units are started and enabled for nginx.
+  become_user: "{{ nc_user }}"
+  ansible.builtin.systemd:
+    scope: user
+    daemon_reload: true
+    name: container-nginx
+    enabled: "{{ pod_systemd_enabled }}"
     state: started

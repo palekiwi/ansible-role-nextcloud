@@ -1,0 +1,40 @@
+---
+- name: Ensure nginx image is present.
+  become_user: "{{ nc_user }}"
+  containers.podman.podman_image:
+    name: "{{ nginx_image }}"
+    state: present
+    force: "{{ update_images }}"
+    tag: "latest"
+
+- name: Ensure nginx volume directories exist with correct ownership.
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    mode: "{{ item.mode }}"
+    state: directory
+  loop: "{{ nginx_dirs }}"
+
+- name: Ensure ports 80 and 443 can be accessed by rootless containers.
+  become: true
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_unprivileged_port_start
+    value: '80'
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: Ensure nginx container exists.
+  become_user: "{{ nc_user }}"
+  containers.podman.podman_container:
+    name: nginx
+    image: "{{ nginx_image }}"
+    state: created
+    detach: true
+    restart_policy: "on-failure"
+    volumes: "{{ nginx_volumes }}"
+    publish:
+      - 80:80
+      - 443:443

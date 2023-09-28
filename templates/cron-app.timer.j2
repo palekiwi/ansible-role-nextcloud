@@ -1,9 +1,9 @@
 [Unit]
-Description=Cron job timer for {{ pod_name }}-app container inside {{ pod_name }}
-Requires={{ pod_name }}-cron-app.service
+Description=Cron job timer for {{ nc_pod_name }}-app container inside {{ nc_pod_name }}
+Requires={{ nc_pod_name }}-cron-app.service
 
 [Timer]
-Unit={{ pod_name }}-cron-app.service
+Unit={{ nc_pod_name }}-cron-app.service
 OnCalendar=*:0/5
 
 [Install]

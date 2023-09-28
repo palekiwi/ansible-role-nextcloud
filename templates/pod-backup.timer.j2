@@ -1,9 +1,9 @@
 [Unit]
-Description=Backup job timer for {{ pod_name }} pod
-Requires={{ pod_name }}-backup.service
+Description=Backup job timer for {{ nc_pod_name }} pod
+Requires={{ nc_pod_name }}-backup.service
 
 [Timer]
-Unit={{ pod_name }}-backup.service
+Unit={{ nc_pod_name }}-backup.service
 OnCalendar=*-*-* 02:00:00
 
 [Install]

@@ -1,8 +1,0 @@
----
-# Nginx configuration
-server_name: "{{ inventory_hostname_short }}"
-
-use_tailscale: false
-use_letsencrypt: false
-
-tailscale_certs_dir: "/etc/tailscale"

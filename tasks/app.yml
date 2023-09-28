@@ -1,17 +1,38 @@
 ---
+- name: Ensure app container image is present.
+  become_user: "{{ nc_user }}"
+  containers.podman.podman_image:
+    name: "{{ nc_app_image }}"
+    state: present
+    force: "{{ update_images }}"
+    tag: "latest"
+
+- name: Ensure app volume directories exist with correct ownership.
+  become: true
+  ansible.builtin.file:
+    path: "{{ nc_volumes_dir }}/{{ item.dir }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    mode: "{{ item.mode }}"
+    state: directory
+  loop:
+    - { dir: "app", owner: "{{ nc_app_user_id }}", mode: "755"}
+    - { dir: "config", owner: "{{ nc_app_user_id }}", mode: "755"}
+    - { dir: "data", owner: "{{ nc_app_user_id }}", mode: "770"}
+
 - name: Ensure app container exists.
-  become_user: "{{ user }}"
+  become_user: "{{ nc_user }}"
   containers.podman.podman_container:
-    pod: "{{ pod_name }}"
-    name: "{{ pod_name }}-app"
-    image: "{{ image_name_nextcloud }}"
+    pod: "{{ nc_pod_name }}"
+    name: "{{ nc_pod_name }}-app"
+    image: "{{ nc_app_image }}"
     state: created
     detach: true
     restart_policy: "on-failure"
     volumes:
-      - "{{ volumes_dir }}/app:/var/www/html:Z"
-      - "{{ volumes_dir }}/config:/var/www/html/config:Z"
-      - "{{ volumes_dir }}/data:/var/www/html/data:Z"
+      - "{{ nc_volumes_dir }}/app:/var/www/html:Z"
+      - "{{ nc_volumes_dir }}/config:/var/www/html/config:Z"
+      - "{{ nc_volumes_dir }}/data:/var/www/html/data:Z"
     env:
       MYSQL_HOST: 127.0.0.1
       MYSQL_USER: "{{ mysql_user }}"

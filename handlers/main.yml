@@ -1,11 +1,13 @@
 ---
 # handlers file for nextcloud
-- name: Wait to initialized db.
+- name: Wait to initialize db.
   ansible.builtin.wait_for:
     timeout: 10
 
 - name: Restart nginx.
-  become: true
-  ansible.builtin.service:
+  containers.podman.podman_container:
     name: nginx
     state: restarted
+
+- name: Recreate nginx.
+  ansible.builtin.include_tasks: tasks/nginx/setup.yml

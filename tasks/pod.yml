@@ -1,0 +1,8 @@
+---
+- name: Ensure a pod exists for {{ nc_pod_name }}.
+  become_user: "{{ nc_user }}"
+  containers.podman.podman_pod:
+    name: "{{ nc_pod_name }}"
+    state: created
+    recreate: true
+    publish: "{{ nc_pod_http_port }}:80"
