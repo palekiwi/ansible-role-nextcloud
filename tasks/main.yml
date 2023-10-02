@@ -5,14 +5,6 @@
     name: podman
     state: present
 
-- name: Import nginx tasks.
-  ansible.builtin.import_tasks: nginx/main.yml
-  when: nginx_use_nginx
-
-- name: Fail
-  ansible.builtin.fail:
-    msg: Break
-
 - name: Import pod tasks.
   ansible.builtin.import_tasks: pod.yml
 
@@ -27,3 +19,7 @@
 
 - name: Import backup tasks.
   ansible.builtin.import_tasks: backup.yml
+
+- name: Import nginx tasks.
+  ansible.builtin.import_tasks: nginx/main.yml
+  when: nginx_use_nginx

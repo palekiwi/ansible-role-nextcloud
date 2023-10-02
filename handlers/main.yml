@@ -9,5 +9,11 @@
     name: nginx
     state: restarted
 
+- name: Reload nginx.
+  become_user: "{{ nc_user }}"
+  ansible.builtin.command:
+    cmd: podman exec nginx nginx -s reload
+  changed_when: true
+
 - name: Recreate nginx.
   ansible.builtin.include_tasks: tasks/nginx/setup.yml

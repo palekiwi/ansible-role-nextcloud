@@ -56,20 +56,3 @@
     name: "{{ nc_pod_name }}-cron-app.timer"
     enabled: true
     state: started
-
-# nginx units
-- name: Generate systemd units for nginx.
-  become_user: "{{ nc_user }}"
-  containers.podman.podman_generate_systemd:
-    name: nginx
-    dest: "/home/{{ nc_user }}/.config/systemd/user/"
-    restart_policy: "on-failure"
-
-- name: Ensure systemd units are started and enabled for nginx.
-  become_user: "{{ nc_user }}"
-  ansible.builtin.systemd:
-    scope: user
-    daemon_reload: true
-    name: container-nginx
-    enabled: "{{ pod_systemd_enabled }}"
-    state: started

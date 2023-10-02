@@ -3,7 +3,7 @@
   hosts: all
 
   vars:
-    nginx_use_tailnet: true
+    nginx_use_tailnet: false
     nginx_use_certbot: true
     certbot_server_name: test.com
     tailnet_certs_dir: /etc/tailscale

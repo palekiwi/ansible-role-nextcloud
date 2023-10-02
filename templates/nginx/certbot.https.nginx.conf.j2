@@ -34,19 +34,3 @@ server {
     	return 301 $scheme://$host/remote.php/dav;
     }
 }
-
-server {
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-
-    if ($host = {{ certbot_server_name }}) {
-        return 301 https://$host$request_uri;
-    }
-
-    listen 80;
-    listen [::]:80;
-
-    server_name {{ certbot_server_name }};
-    return 404;
-}

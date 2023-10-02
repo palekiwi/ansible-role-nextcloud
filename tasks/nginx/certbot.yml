@@ -21,25 +21,24 @@
     - "{{ certbot_lib_dir }}"
     - "{{ certbot_www_dir }}"
 
-- name: Copy http configuration template.
-  become_user: "{{ nc_user }}"
-  ansible.builtin.template:
-    src: templates/nginx/certbot.http.nginx.conf.j2
-    dest: "{{ nginx_conf_path }}/{{ certbot_server_name }}.conf"
-    mode: "0644"
-    force: true
-
 - name: Update volumes list for nginx.
   ansible.builtin.set_fact:
     nginx_volumes: '{{ nginx_volumes + certbot_nginx_volumes }}'
 
-- name: Import nginx setup tasks.
-  ansible.builtin.import_tasks: setup.yml
+- name: Copy http configuration template.
+  become_user: "{{ nc_user }}"
+  ansible.builtin.template:
+    src: templates/nginx/certbot.http.nginx.conf.j2
+    dest: "{{ nginx_conf_path }}/{{ certbot_server_name }}.http.conf"
+    mode: "0644"
+    force: true
+  changed_when: true
+  notify: Recreate nginx.
 
-# TODO
-# start nginx for certbot verification
+- name: Flush handlers.
+  ansible.builtin.meta: flush_handlers
 
-- name: Ensure certbot container is started.
+- name: Ensure certbot is started to obtain certificates.
   become_user: "{{ nc_user }}"
   containers.podman.podman_container:
     name: certbot
@@ -48,20 +47,19 @@
     rm: true
     recreate: true
     volumes: "{{ certbot_volumes }}"
-    command: certonly -n --webroot --webroot-path /tmp/letsencrypt -m {{ certbot_email }} --agree-tos -d {{ certbot_server_name }}
-  register: cert
-
-- name: Debug
-  ansible.builtin.debug:
-    var: cert
+    command: >
+      certonly -n --webroot
+      --webroot-path /tmp/letsencrypt
+      -m {{ certbot_email }}
+      --agree-tos
+      -d {{ certbot_server_name }}
 
 - name: Copy https configuration template.
   become_user: "{{ nc_user }}"
   ansible.builtin.template:
     src: templates/nginx/certbot.https.nginx.conf.j2
-    dest: "{{ nginx_conf_path }}/{{ certbot_server_name }}.conf"
+    dest: "{{ nginx_conf_path }}/{{ certbot_server_name }}.https.conf"
     mode: "0644"
     force: true
-
-- name: Import nginx setup tasks.
-  ansible.builtin.import_tasks: setup.yml
+  changed_when: true
+  notify: Reload nginx.
