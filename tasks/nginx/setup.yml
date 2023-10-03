@@ -34,6 +34,7 @@
     state: created
     detach: true
     restart_policy: "on-failure"
+    recreate: true
     volumes: "{{ nginx_volumes }}"
     publish:
       - 80:80
@@ -54,3 +55,4 @@
     name: container-nginx
     enabled: true
     state: restarted
+  failed_when: false

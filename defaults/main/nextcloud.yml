@@ -36,4 +36,4 @@ nextcloud_admin_user: admin
 nextcloud_admin_password: nextcloud
 nextcloud_overwriteprotocol: "https"
 nextcloud_overwritecliurl: ""
-nextcloud_trusted_domains: "{{ ansible_host }} {{ tailnet_server_name }}"
+nextcloud_trusted_domains: "{{ ansible_host }} {{ tailnet_server_name }} {{ certbot_server_name }}"
